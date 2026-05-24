@@ -199,3 +199,10 @@ languageSelect.addEventListener('change', updateLanguage);
 
 // Initialization pass to structure values on boot
 calculateMetrics();
+document.getElementById('resetBtn').addEventListener('click', () => {
+    totalRevenueInput.value = 10000;
+    avgOrderValueInput.value = 1000;
+    leadResponseRateSlider.value = 40;
+    prospectResponseRateSlider.value = 20;
+    calculateMetrics();
+});
