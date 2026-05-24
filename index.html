@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadPredictor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Left Column: Control Panel -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">▼</span> LeadPredictor
+            </div>
+            
+            <div class="input-group">
+                <label data-i18n="label-language">Language</label>
+                <select id="languageSelect">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="bg">🇧🇬 Bulgarian</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label data-i18n="label-currency">Currency</label>
+                <select id="currencySelect">
+                    <option>$ US Dollar</option>
+                    <option>BGN Lev</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label data-i18n="label-start">Campaign Start</label>
+                <input type="date" value="2026-05-08">
+            </div>
+
+            <div class="input-group">
+                <label data-i18n="label-end">Campaign End</label>
+                <input type="date" value="2026-11-04">
+            </div>
+
+            <div class="input-group">
+                <label data-i18n="label-revenue">Total Revenue</label>
+                <input type="number" id="totalRevenue" value="10000">
+            </div>
+
+            <div class="input-group">
+                <label data-i18n="label-avg-order">Avg. Order Value</label>
+                <input type="number" id="avgOrderValue" value="1000">
+            </div>
+        </aside>
+
+        <!-- Right Column: Main Dashboard Content -->
+        <main class="main-content">
+            <div class="top-row">
+                <!-- Visual Bar Chart Component -->
+                <div class="chart-card">
+                    <div class="bar-chart">
+                        <!-- Month 1 -->
+                        <div class="chart-row" data-month="1">
+                            <span class="label">1</span>
+                            <div class="bar-container">
+                                <div class="bar prospects-bar">
+                                    <div class="bar leads-bar">
+                                        <div class="bar customers-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Month 2 -->
+                        <div class="chart-row" data-month="2">
+                            <span class="label">2</span>
+                            <div class="bar-container">
+                                <div class="bar prospects-bar">
+                                    <div class="bar leads-bar">
+                                        <div class="bar customers-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Month 3 -->
+                        <div class="chart-row" data-month="3">
+                            <span class="label">3</span>
+                            <div class="bar-container">
+                                <div class="bar prospects-bar">
+                                    <div class="bar leads-bar">
+                                        <div class="bar customers-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Month 4 -->
+                        <div class="chart-row" data-month="4">
+                            <span class="label">4</span>
+                            <div class="bar-container">
+                                <div class="bar prospects-bar">
+                                    <div class="bar leads-bar">
+                                        <div class="bar customers-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Month 5 -->
+                        <div class="chart-row" data-month="5">
+                            <span class="label">5</span>
+                            <div class="bar-container">
+                                <div class="bar prospects-bar">
+                                    <div class="bar leads-bar">
+                                        <div class="bar customers-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Month 6 -->
+                        <div class="chart-row" data-month="6">
+                            <span class="label">6</span>
+                            <div class="bar-container">
+                                <div class="bar prospects-bar">
+                                    <div class="bar leads-bar">
+                                        <div class="bar customers-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-scale">
+                        <span data-i18n="scale-start">0 people</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span><span data-i18n="scale-end">120 people</span>
+                    </div>
+
+                    <!-- Single Dynamic Shared Hover Tooltip -->
+                    <div id="sharedTooltip" class="tooltip" style="display: none;">
+                        <strong id="tooltipTitle">Month #1</strong><br>
+                        <span data-i18n="tooltip-prospects">Prospects</span>: <span id="tooltipProspects">0</span><br>
+                        <span data-i18n="tooltip-leads">Leads</span>: <span id="tooltipLeads">0</span><br>
+                        <span data-i18n="tooltip-customers">Customers</span>: <span id="tooltipCustomers">0</span>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Output Cards -->
+                <div class="kpi-column">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span data-i18n="kpi-prospects">📋 Prospects</span>
+                            <span class="percentage">100%</span>
+                        </div>
+                        <div class="kpi-value" id="prospectsValue">125</div>
+                        <div class="progress-bar"><div class="progress" style="width: 100%"></div></div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span data-i18n="kpi-leads">👤 Leads</span>
+                            <span class="percentage" id="leadPercLabel">20.00%</span>
+                        </div>
+                        <div class="kpi-value" id="leadsValue">25</div>
+                        <div class="progress-bar"><div class="progress" id="leadProgress" style="width: 20%"></div></div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span data-i18n="kpi-customers">🏆 Customers</span>
+                            <span class="percentage" id="custPercLabel">8.00%</span>
+                        </div>
+                        <div class="kpi-value" id="customersValue">10</div>
+                        <div class="progress-bar"><div class="progress" id="custProgress" style="width: 8%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Panel: Interactive Sliders -->
+            <div class="sliders-card">
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span data-i18n="slider-lead-rate">Lead Response Rate</span>
+                        <span id="leadRateLabel">40.00%</span>
+                    </div>
+                    <input type="range" id="leadResponseRate" min="1" max="100" value="40" step="0.1">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span data-i18n="slider-prospect-rate">Prospect Response Rate</span>
+                        <span id="prospectRateLabel">20.00%</span>
+                    </div>
+                    <input type="range" id="prospectResponseRate" min="1" max="100" value="20" step="0.1">
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
