@@ -4,6 +4,9 @@ const avgOrderValueInput = document.getElementById('avgOrderValue');
 const leadResponseRateSlider = document.getElementById('leadResponseRate');
 const prospectResponseRateSlider = document.getElementById('prospectResponseRate');
 const languageSelect = document.getElementById('languageSelect');
+const currencySelect = document.getElementById('currencySelect');
+const startDateInput = document.getElementById('startDate');
+const endDateInput = document.getElementById('endDate');
 
 // Output KPI Metrics Elements
 const customersValue = document.getElementById('customersValue');
@@ -71,18 +74,47 @@ const translations = {
     }
 };
 
+// Функция за автоматично зануляване на датите към днешна дата
+function initializeDates() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    
+    if (startDateInput) startDateInput.value = `${yyyy}-${mm}-${dd}`;
+    
+    const futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + 6);
+    const fYyyy = futureDate.getFullYear();
+    const fMm = String(futureDate.getMonth() + 1).padStart(2, '0');
+    const fDd = String(futureDate.getDate()).padStart(2, '0');
+    
+    if (endDateInput) endDateInput.value = `${fYyyy}-${fMm}-${fDd}`;
+}
+
+// Функция за динамична смяна на символа на валутата
+function updateCurrency() {
+    const selectedCurrency = currencySelect.value;
+    const sign = selectedCurrency === 'EUR' ? '€' : '$';
+    
+    const sign1 = document.getElementById('currencySign1');
+    const sign2 = document.getElementById('currencySign2');
+    if (sign1) sign1.innerText = sign;
+    if (sign2) sign2.innerText = sign;
+
+    calculateMetrics();
+}
+
 // Language Interface Swapper Engine
 function updateLanguage() {
     const selectedLang = languageSelect.value;
     const langPackage = translations[selectedLang];
     
-    // Смяна на знамето в етикета в реално време
     const currentFlag = document.getElementById('currentFlag');
     if (currentFlag) {
         currentFlag.innerText = selectedLang === 'bg' ? '🇧🇬' : '🇺🇸';
     }
 
-    // Find and replace text for elements tagged with data-i18n attributes
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
         if (langPackage[key]) {
@@ -95,45 +127,37 @@ function updateLanguage() {
 
 // Core Calculation Engine
 function calculateMetrics() {
-    // ЖЕЛЯЗНА ВАЛИДАЦИЯ ЗА ПОЛОЖИТЕЛНИ СТОЙНОСТИ (ТОЧНО ТУК Е МЯСТОТО Й)
     const revenue = Math.abs(parseFloat(totalRevenueInput.value)) || 0;
-    let avgOrder = Math.abs(parseFloat(avgOrderValueInput.value)) || 1; 
-    if (avgOrder === 0) avgOrder = 1; // Предпазва от делене на нула
+    let avgOrder = Math.abs(parseFloat(avgOrderValueInput.value)) || 0; 
 
-    const leadRate = parseFloat(leadResponseRateSlider.value);
-    const prospectRate = parseFloat(prospectResponseRateSlider.value);
+    const leadRate = parseFloat(leadResponseRateSlider.value) || 0;
+    const prospectRate = parseFloat(prospectResponseRateSlider.value) || 0;
 
-    // Refresh range slider labels dynamically
     leadRateLabel.innerText = leadRate.toFixed(2) + '%';
     prospectRateLabel.innerText = prospectRate.toFixed(2) + '%';
 
-    // Formula 01: Customers = Total Revenue / Avg. Order Value
-    const customers = Math.ceil(revenue / avgOrder);
+    // Изчисляване на базовите стойности със защити против разделяне на 0
+    const customers = avgOrder > 0 ? Math.ceil(revenue / avgOrder) : 0;
+    const leads = leadRate > 0 ? Math.ceil((customers * 100) / leadRate) : 0;
+    const prospects = prospectRate > 0 ? Math.ceil((leads * 100) / prospectRate) : 0;
 
-    // Formula 02: Leads = Customers * 100 / Lead Response Rate
-    const leads = Math.ceil((customers * 100) / leadRate);
-
-    // Formula 03: Prospects = Leads * 100 / Prospect Response Rate
-    const prospects = Math.ceil((leads * 100) / prospectRate);
-
-    // Store calculations reference values locally
     currentCalculations = { prospects, leads, customers };
 
-    // Render foundational results into KPI DOM nodes
+    // Извеждане на главните големи цифри на екрана
     customersValue.innerText = customers;
-    leadsValue.innerText = leads;
+    leadsValue.innerText = prospects > 0 ? leads : 0; // Спира появата на NaN в големите цифри
     prospectsValue.innerText = prospects;
 
+    // Спиране на NaN при изчисляване на процентното съотношение на KPI картите
     const leadPercentage = prospects > 0 ? (leads / prospects) * 100 : 0;
     const custPercentage = prospects > 0 ? (customers / prospects) * 100 : 0;
 
     leadPercLabel.innerText = leadPercentage.toFixed(2) + '%';
     custPercLabel.innerText = custPercentage.toFixed(2) + '%';
 
-    leadProgress.style.width = `${Math.min(leadPercentage, 100)}%`;
-    custProgress.style.width = `${Math.min(custPercentage, 100)}%`;
+    if (leadProgress) leadProgress.style.width = `${Math.min(leadPercentage, 100)}%`;
+    if (custProgress) custProgress.style.width = `${Math.min(custPercentage, 100)}%`;
 
-    // Dynamic Scale Graph Resizer Integration pass
     const maxScaleValue = 120; 
 
     for (let m = 1; m <= 6; m++) {
@@ -193,21 +217,25 @@ document.querySelectorAll('.chart-row').forEach(row => {
     });
 });
 
-// Логика за бутона Reset (Добавена в Бранч 2)
+// Логика за бутона Reset
 document.getElementById('resetBtn').addEventListener('click', () => {
-    totalRevenueInput.value = 10000;
-    avgOrderValueInput.value = 1000;
-    leadResponseRateSlider.value = 40;
-    prospectResponseRateSlider.value = 20;
+    totalRevenueInput.value = 0;
+    avgOrderValueInput.value = 0;
+    leadResponseRateSlider.value = 0;
+    prospectResponseRateSlider.value = 0;
+    initializeDates();
+    updateCurrency();
     calculateMetrics();
 });
 
-// Bind live listeners across the control schema for real-time recalculation
+// Bind live listeners across the control schema
 totalRevenueInput.addEventListener('input', calculateMetrics);
 avgOrderValueInput.addEventListener('input', calculateMetrics);
 leadResponseRateSlider.addEventListener('input', calculateMetrics);
 prospectResponseRateSlider.addEventListener('input', calculateMetrics);
 languageSelect.addEventListener('change', updateLanguage);
+currencySelect.addEventListener('change', updateCurrency);
 
-// Initialization pass to structure values on boot
+// Инициализация при стартиране
+initializeDates();
 calculateMetrics();
