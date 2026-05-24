@@ -76,7 +76,7 @@ function updateLanguage() {
     const selectedLang = languageSelect.value;
     const langPackage = translations[selectedLang];
     
-    // Смяна на знамето в етикета в реалне време
+    // Смяна на знамето в етикета в реално време
     const currentFlag = document.getElementById('currentFlag');
     if (currentFlag) {
         currentFlag.innerText = selectedLang === 'bg' ? '🇧🇬' : '🇺🇸';
@@ -95,8 +95,11 @@ function updateLanguage() {
 
 // Core Calculation Engine
 function calculateMetrics() {
-    const revenue = parseFloat(totalRevenueInput.value) || 0;
-    const avgOrder = parseFloat(avgOrderValueInput.value) || 1; 
+    // ЖЕЛЯЗНА ВАЛИДАЦИЯ ЗА ПОЛОЖИТЕЛНИ СТОЙНОСТИ (ТОЧНО ТУК Е МЯСТОТО Й)
+    const revenue = Math.abs(parseFloat(totalRevenueInput.value)) || 0;
+    let avgOrder = Math.abs(parseFloat(avgOrderValueInput.value)) || 1; 
+    if (avgOrder === 0) avgOrder = 1; // Предпазва от делене на нула
+
     const leadRate = parseFloat(leadResponseRateSlider.value);
     const prospectRate = parseFloat(prospectResponseRateSlider.value);
 
@@ -190,6 +193,15 @@ document.querySelectorAll('.chart-row').forEach(row => {
     });
 });
 
+// Логика за бутона Reset (Добавена в Бранч 2)
+document.getElementById('resetBtn').addEventListener('click', () => {
+    totalRevenueInput.value = 10000;
+    avgOrderValueInput.value = 1000;
+    leadResponseRateSlider.value = 40;
+    prospectResponseRateSlider.value = 20;
+    calculateMetrics();
+});
+
 // Bind live listeners across the control schema for real-time recalculation
 totalRevenueInput.addEventListener('input', calculateMetrics);
 avgOrderValueInput.addEventListener('input', calculateMetrics);
@@ -199,10 +211,3 @@ languageSelect.addEventListener('change', updateLanguage);
 
 // Initialization pass to structure values on boot
 calculateMetrics();
-document.getElementById('resetBtn').addEventListener('click', () => {
-    totalRevenueInput.value = 10000;
-    avgOrderValueInput.value = 1000;
-    leadResponseRateSlider.value = 40;
-    prospectResponseRateSlider.value = 20;
-    calculateMetrics();
-});
