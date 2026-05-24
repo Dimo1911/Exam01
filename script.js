@@ -75,6 +75,12 @@ const translations = {
 function updateLanguage() {
     const selectedLang = languageSelect.value;
     const langPackage = translations[selectedLang];
+    
+    // Смяна на знамето в етикета в реалне време
+    const currentFlag = document.getElementById('currentFlag');
+    if (currentFlag) {
+        currentFlag.innerText = selectedLang === 'bg' ? '🇧🇬' : '🇺🇸';
+    }
 
     // Find and replace text for elements tagged with data-i18n attributes
     document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -84,7 +90,6 @@ function updateLanguage() {
         }
     });
 
-    // Force metric re-trigger pass to update text dependencies safely
     calculateMetrics();
 }
 
@@ -158,19 +163,16 @@ document.querySelectorAll('.chart-row').forEach(row => {
         const monthFactor = m / 6;
         const selectedLang = languageSelect.value;
 
-        // Calculate custom isolated logic specs contextually for that month target
         const mProspects = Math.ceil(currentCalculations.prospects * monthFactor);
         const mLeads = Math.ceil(currentCalculations.leads * monthFactor);
         const mCustomers = Math.ceil(currentCalculations.customers * monthFactor);
 
-        // Inject computed specifications values into the template layout elements
         const prefix = translations[selectedLang]["month-prefix"];
         tooltipTitle.innerText = `${prefix} #${m}`;
         tooltipProspects.innerText = mProspects;
         tooltipLeads.innerText = mLeads;
         tooltipCustomers.innerText = mCustomers;
 
-        // Display element node container overlay map framework
         sharedTooltip.style.display = 'block';
     });
 
@@ -179,7 +181,6 @@ document.querySelectorAll('.chart-row').forEach(row => {
         const leftOffset = e.clientX - cardBounds.left;
         const topOffset = e.clientY - cardBounds.top;
 
-        // Reposition tooltip node coordinates anchors instantly on tracking update
         sharedTooltip.style.left = `${leftOffset}px`;
         sharedTooltip.style.top = `${topOffset}px`;
     });
