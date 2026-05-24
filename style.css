@@ -135,19 +135,31 @@ body {
     transition: width 0.3s ease, background-color 0.2s ease;
 }
 
+/* Най-големият стълб: Общ брой контакти */
 .prospects-bar {
-    background-color: #334155; 
+    background-color: #1e2533; /* Постоянен тъмен цвят за колоните */
     width: 0%; 
+    min-width: 8px; /* Гарантира, че колоните ще имат фиксиран размер дори при 0 */
+    display: flex;
+    align-items: center;
 }
 
+
+/* Средният сегмент: Leads */
 .leads-bar {
     background-color: #4b5563; 
     width: 0%; 
+    min-width: 6px;
+    display: flex;
+    align-items: center;
 }
 
+
+/* Най-светлият преден сегмент: Реални клиенти */
 .customers-bar {
     background-color: #9ca3af; 
     width: 0%; 
+    min-width: 4px;
 }
 
 /* Highlight components on mouse hover state */
