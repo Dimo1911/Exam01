@@ -262,3 +262,8 @@ input[type="range"] {
     border-radius: 3px;
     outline: none;
 }
+/* Make native calendar icons white for dark mode visibility */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(100%);
+    cursor: pointer;
+}
